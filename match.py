@@ -14,10 +14,9 @@ def Rabin_Karp_Matcher(text, pattern, d, q):
     m = len(pattern)
     h = pow(d,m-1)%q
     if n < m:
-    	return []
+    	return False
     p = 0
     t = 0
-    result = []
     for i in range(m): # preprocessing
         p = (d*p+ord(pattern[i]))%q
         t = (d*t+ord(text[i]))%q
@@ -29,12 +28,12 @@ def Rabin_Karp_Matcher(text, pattern, d, q):
                     match = False
                     break
             if match:
-                result = result + [s]
+                return True
         if s < n-m:
             t = (t - h*ord(text[s]))%q # remove letter s
             t = (t*d + ord(text[s+m]))%q # add letter s+m
             t = (t + q)%q
-    return result
+    return False
     
 if __name__  == "__main__":    
 	
@@ -59,21 +58,26 @@ if __name__  == "__main__":
 	# list of all manufacturers 
 	manu_list = list(prod_dict.keys())
 		
+	cou = 0
+	co = 0	
 	for line in list_f:
 		line = line.strip()
 		item = json.loads(line)
+		co = co + 1
+		it1 = item['manufacturer'].replace(" ", "").lower()
+		it2 = item['title'].replace(" ", "").lower()
 		# Find the manufacturer of the item by looking at all the manufacturers
 		for m in manu_list:
 			# Remove spaces and convert to lowercase before pattern matching
-			match_list = Rabin_Karp_Matcher(item['manufacturer'].replace(" ", "").lower(), m.replace(" ", "").lower(), 301, 1000000007)
-			if len(match_list) != 0:
+			match_list = Rabin_Karp_Matcher(it1, m.replace(" ", "").lower(), 101, 1000000007)
+			if match_list:
 				ma = 0
 				p_name = ""
 				# Find the matching item among all the items manufactured by that manufacturer
 				for it in prod_dict[m]:
 					# Remove spaces and convert to lowercase before pattern matching
-					m_list = Rabin_Karp_Matcher(item['title'].replace(" ", "").lower(), it['model'].replace(" ", "").lower(), 301, 1000000007)
-					if len(m_list) != 0:
+					m_list = Rabin_Karp_Matcher(it2, it['model'].replace(" ", "").lower(), 101, 1000000007)
+					if m_list:
 						# Find the model name with maximum matching length
 						if len(it['model'].replace(" ", "")) > ma:
 							ma = len(it['model'].replace(" ", ""))
@@ -82,10 +86,15 @@ if __name__  == "__main__":
 				if p_name != "":		
 					try:
 						result[p_name].append(item)
+						cou = cou + 1
 					except KeyError:
 						l = []
 						l.append(item)
 						result[p_name] = l
+						cou = cou + 1
+	
+	print "total listings : ",co
+	print "total number of matched listings : ", cou
 	
 	# convert the result to the required {'listing': array[item], 'product_name': string} format	
 	result_format = ({'product_name':k, 'listings':v} for (k, v) in result.items())
