@@ -4,36 +4,8 @@
 #	A simple product matcher
 #
 
-
 import sys
 import json
-
-# Rabin Karp for string matching
-def Rabin_Karp_Matcher(text, pattern, d, q):
-    n = len(text)
-    m = len(pattern)
-    h = pow(d,m-1)%q
-    if n < m:
-    	return False
-    p = 0
-    t = 0
-    for i in range(m): # preprocessing
-        p = (d*p+ord(pattern[i]))%q
-        t = (d*t+ord(text[i]))%q
-    for s in range(n-m+1):
-        if p == t: # check character by character
-            match = True
-            for i in range(m):
-                if pattern[i] != text[s+i]:
-                    match = False
-                    break
-            if match:
-                return True
-        if s < n-m:
-            t = (t - h*ord(text[s]))%q # remove letter s
-            t = (t*d + ord(text[s+m]))%q # add letter s+m
-            t = (t + q)%q
-    return False
     
 if __name__  == "__main__":    
 	
@@ -69,15 +41,15 @@ if __name__  == "__main__":
 		# Find the manufacturer of the item by looking at all the manufacturers
 		for m in manu_list:
 			# Remove spaces and convert to lowercase before pattern matching
-			match_list = Rabin_Karp_Matcher(it1, m.replace(" ", "").lower(), 301, 1000000007)
-			if match_list:
+			match_idx = it1.find(m.replace(" ", "").lower())
+			if match_idx != -1:
 				ma = 0
 				p_name = ""
 				# Find the matching item among all the items manufactured by that manufacturer
 				for it in prod_dict[m]:
 					# Remove spaces and convert to lowercase before pattern matching
-					m_list = Rabin_Karp_Matcher(it2, it['model'].replace(" ", "").lower(), 301, 1000000007)
-					if m_list:
+					m_idx = it2.find(it['model'].replace(" ", "").lower()) 
+					if m_idx != -1:
 						# Find the model name with maximum matching length
 						if len(it['model'].replace(" ", "")) > ma:
 							ma = len(it['model'].replace(" ", ""))
