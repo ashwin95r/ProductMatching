@@ -36,23 +36,23 @@ if __name__  == "__main__":
 		line = line.strip()
 		item = json.loads(line)
 		co = co + 1
-		it1 = item['manufacturer'].replace(" ", "").lower()
-		it2 = item['title'].replace(" ", "").lower()
+		it1 = item['manufacturer'].replace(" ", "").replace("-", "").replace("_", "").lower()
+		it2 = item['title'].replace(" ", "").replace("-", "").replace("_", "").lower()
 		# Find the manufacturer of the item by looking at all the manufacturers
 		for m in manu_list:
 			# Remove spaces and convert to lowercase before pattern matching
-			match_idx = it1.find(m.replace(" ", "").lower())
+			match_idx = it1.find(m.replace(" ", "").replace("-", "").replace("_", "").lower())
 			if match_idx != -1:
 				ma = 0
 				p_name = ""
 				# Find the matching item among all the items manufactured by that manufacturer
 				for it in prod_dict[m]:
 					# Remove spaces and convert to lowercase before pattern matching
-					m_idx = it2.find(it['model'].replace(" ", "").lower()) 
+					m_idx = it2.find(it['model'].replace(" ", "").replace("-", "").replace("_", "").lower()) 
 					if m_idx != -1:
 						# Find the model name with maximum matching length
-						if len(it['model'].replace(" ", "")) > ma:
-							ma = len(it['model'].replace(" ", ""))
+						if len(it['model'].replace(" ", "").replace("-", "").replace("_", "")) > ma:
+							ma = len(it['model'].replace(" ", "").replace("-", "").replace("_", ""))
 					 		p_name = it['product_name']
 				# If there is a product, add the item to the listing of that product	 		
 				if p_name != "":		
