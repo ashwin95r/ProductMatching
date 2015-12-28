@@ -1,5 +1,4 @@
 # ProductMatching
-A simple product matching using Rabin-Karp algorithm
 
 1) Clone the repository<br />
 2) Install python<br />
